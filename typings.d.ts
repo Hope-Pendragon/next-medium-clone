@@ -34,3 +34,14 @@ export interface SanityPost {
 	body: [PostBody];
 	publishedAt: string;
 }
+
+interface SanityComment {
+	_id: string;
+	name: string;
+	email: string;
+	comment: string;
+	post: {
+		_ref: string;
+	};
+	_createdAt: string;
+}

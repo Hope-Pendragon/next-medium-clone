@@ -1,13 +1,6 @@
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
 import { SanityPost } from "../typings";
 import { useState } from "react";
-
-interface InputForm {
-	_id: string;
-	name: string;
-	email: string;
-	comment: string;
-}
 
 function Form(post: SanityPost) {
 	const [submitted, setSubmitted] = useState(false);
@@ -18,7 +11,7 @@ function Form(post: SanityPost) {
 		formState: { errors },
 	} = useForm();
 
-	const onSubmit: SubmitHandler<InputForm> = async (data) => {
+	const onSubmit: SubmitHandler<FieldValues> = async (data) => {
 		console.log(data);
 		await fetch("/api/createComment", {
 			method: "POST",
@@ -35,7 +28,15 @@ function Form(post: SanityPost) {
 	};
 
 	return submitted ? (
-		<h1>Submitted.</h1>
+		<div className="flex flex-col px-10 pt-4 pb-8 my-12 max-w-2xl mx-auto bg-neutral-900 text-white rounded border-2 border-neutral-900 shadow">
+			<h3 className="text-3xl pt-2 font-bold">
+				Your comment has been submitted!
+			</h3>
+			<p className="mt-4 -mx-10 px-10 text-base font-semibold italic bg-neutral-900">
+				Once it has been approved your comment will show up in the
+				comment section for this article.
+			</p>
+		</div>
 	) : (
 		<form
 			className="flex flex-col p-5 max-w-2xl mx-auto mb-10"
@@ -43,6 +44,7 @@ function Form(post: SanityPost) {
 		>
 			<h3 className="text-sm text-yellow-500">Enjoyed this article?</h3>
 			<h4 className="text-3xl font-bold">Leave a comment below!</h4>
+
 			<hr className="py-3 mt-2" />
 
 			<input

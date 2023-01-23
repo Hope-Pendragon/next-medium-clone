@@ -72,3 +72,11 @@ export const getPostBySlug = `* [_type == "post" && slug.current == $slug] [0] {
 	body,
 	publishedAt
 }`;
+
+export const getApprovedCommentsForOneArticle = `* [_type == "comment" && post._ref == $_ref && approved == true] {
+		_id,
+		comment,
+		email,
+		name,
+		_createdAt
+	}`;

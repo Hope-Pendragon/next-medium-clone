@@ -1,20 +1,23 @@
 import Header from "../../components/Header";
+import Form from "../../components/Form";
+import CommentsSection from "../../components/CommentsSection";
 
 import {
 	getPostBySlug,
 	getPostsPaths,
+	getApprovedCommentsForOneArticle,
 	sanityClient,
 	urlFor,
 } from "../../sanity";
 import { PortableText } from "@portabletext/react";
 
-import { SanityPost } from "../../typings";
+import { SanityComment, SanityPost } from "../../typings";
 import { ReactElement } from "react";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import Form from "../../components/Form";
 
 interface Props {
 	post: SanityPost;
+	comments: SanityComment[];
 }
 
 export async function getStaticPaths() {
@@ -35,16 +38,47 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: Params) {
-	const query = getPostBySlug;
+	const queries = [getPostBySlug, getApprovedCommentsForOneArticle];
 
-	const post = await sanityClient.fetch(query, { slug: params?.slug });
-	return post
-		? { props: { post }, revalidate: 3600 /*s*/ }
-		: { notFound: true };
+	const post: SanityPost = await sanityClient.fetch(queries[0], {
+		slug: params?.slug,
+	});
+
+	const comments: SanityComment[] = await sanityClient.fetch(queries[1], {
+		_ref: post._id,
+	});
+
+	if (post && comments) {
+		return {
+			props: {
+				post,
+				comments,
+			},
+			revalidate: 3600 /*s*/,
+		};
+	} else if (post) {
+		return {
+			props: {
+				post,
+				comments: { notFound: true },
+			},
+			revalidate: 3600 /*s*/,
+		};
+	} else {
+		return {
+			notFound: true,
+		};
+	}
 }
 
-function PostPage({ post }: Props) {
+interface Props {
+	post: SanityPost;
+	comments: SanityComment[];
+}
+
+function PostPage({ post, comments }: Props) {
 	const { title, description, mainImage } = post;
+
 	return (
 		<main>
 			<Header />
@@ -70,6 +104,10 @@ function PostPage({ post }: Props) {
 			<hr className="mx-w-lg my-5 mx-auto border border-yellow-500" />
 
 			<Form {...post} />
+
+			<hr className="mx-w-lg my-5 mx-auto border border-yellow-500" />
+
+			<CommentsSection comments={comments} />
 		</main>
 	);
 }
