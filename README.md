@@ -263,3 +263,19 @@ One possible way to implement it is to simply manipulate the data _without_ maki
     ```
 
     Note that styling can be more precisely controlled by changing the _type_ of blocks inside Sanity's portable text editor _itself_. The types of blocks should **_always_** be checked regardless, due to the high impact it can have on the final presentation.
+
+## Deploying
+
+### Sanity
+
+To deploy your Sanity Studio, simply run the following command:
+
+```
+sanity deploy
+```
+
+You will be prompted to give your deployment a name.
+
+> Note:
+>
+> Both the deployed Sanity Studio and the local Sanity Studio **can** run at the same time.
